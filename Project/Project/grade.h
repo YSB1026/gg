@@ -11,7 +11,14 @@
 #include <algorithm>
 using namespace std;
 
+
 class grade {
+private:
+	struct info {
+		int num, sub1, sub2, rank1, rank2;
+		char name[13] = "null";
+	}; typedef struct info info;
+
 public:
 	void input_data() {
 		srand((unsigned)time(NULL));
@@ -65,9 +72,8 @@ public:
 		//과목1
 		for (int i = 0; i < n; i++) {
 			student[i].rank1 = 1;
-			for (int j = 0; j < n; j++) {
+			for (int j = 1; j < n; j++) {
 				if (temp1[i].first < temp1[j].first) {
-					//r1[i] += 1;
 					student[temp1[i].second - 1].rank1++;
 				}
 			}
@@ -76,7 +82,7 @@ public:
 		//과목2
 		for (int i = 0; i < n; i++) {
 			student[i].rank2 = 1;
-			for (int j = 0; j < n; j++) {
+			for (int j = 1; j < n; j++) {
 				if (temp2[i].first < temp2[j].first) {
 					student[temp2[i].second - 1].rank2++;
 				}
@@ -110,38 +116,71 @@ public:
 	}
 
 	void update_data() {
+		int n,sel;
+		char search[13];
+		bool t = false;
+		info student;
+
+		fstream fio("grade.bin", ios::binary|ios::out|ios::in);
+		fio.read((char*)&n, sizeof(n));
+
+		cout << "점수를 변경할 학생 이름 입력 : ";
+		cin >> search;
+
+		for (int i = 0; i < n; i++) {
+			fio.read((char*)&student, sizeof(info));
+			char* ptr = strstr(student.name, search);
+			if (ptr != NULL) {
+				t = true;
+				do {
+					printf("0. 과목1 점수 변경");
+					printf("1. 과목2 점수 변경");
+					printf("메뉴 선택 : ");
+					cin >> sel;
+
+					system("cls");
+				} while (sel < 0 || sel>1);
+				if (sel == 0) {
+					
+				}
+				else {
+					;
+				}
+			}
+		}
+		if (t == false) {
+			printf("\n입력한 학생이 없습니다!\n");
+		}
+
 		
+
 	}
 	void find_data() {
 		int n;
 		char search[13];
-		info student;
+		bool t = false;
 
 		ifstream fin("grade.bin", ios::binary);
 		fin.read((char*)&n, sizeof(n));
+		info* student = new info[n];
+		fin.read((char*)student, n * sizeof(info));
 
 		cout << "=============자료 검색=============" << endl;
 		cout << "찾고 싶은 학생 이름 입력 : ";
 		cin >> search;
 
 		for(int i = 0; i < n; i++) {
-			fin.read((char*)&student, sizeof(student));
-			char* ptr = strstr(student.name, search);
+			char* ptr = strstr(student[i].name, search);
 			if (ptr != NULL) {
+				t = true;
 				printf("\n학생을 찾았습니다!\n");
-				printf("||번호 : %5d || 이름 : %8s || 과목1: %3d || 과목2 : %3d || 과목1 등수: %5d || 과목2 등수 : %5d ||\n", student.num, student.name,
-				student.sub1, student.sub2, student.rank1, student.rank2);
+				printf("||번호 : %5d || 이름 : %8s || 과목1: %3d || 과목2 : %3d || 과목1 등수: %5d || 과목2 등수 : %5d ||\n",
+					student[i].num, student[i].name,student[i].sub1, student[i].sub2, student[i].rank1, student[i].rank2);
 			}
-			if (i == n - 1 && ptr==NULL)
-				printf("\n찾으시는 학생이 없습니다!\n");
+		}
+		if (t == false) {
+			printf("\n입력한 학생이 없습니다!\n");
 		}
 	}
-
-
-private:
-	struct info {
-		int num, sub1, sub2, rank1, rank2;
-		char name[13]="null";
-	}; typedef struct info info;
 };
 #endif
